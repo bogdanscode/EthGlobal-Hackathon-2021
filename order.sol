@@ -1,73 +1,130 @@
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
-import "https://github.com/smartcontractkit/chainlink/blob/master/evm-contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-import "./SafeMath.sol";
-    contract orders{
-         using Safemath for uint256;
+import "./tracker1.sol";
+//import "./cointracker2.sol";
+import "./safemath.sol";
+import "./interface.sol";
+//import "./helpers/PredicateHelper.sol";
+    contract orderss// is
+   // PredicateHelper
+    {
+         using SafeMath for uint256;
         
-         IERC20 public makerAsset;
+  //  event Transfer(address indexed from, address indexed to, uint value);
+//    event Approval(address indexed owner, address indexed spender, uint value);
+        event makerAssetData(address sender, address receiver,uint amountMaker);
+        event takerAssetData(address sender, address receiver,address signer, uint amount);
+        
+        
+         IERC20 public token1;
     address public owner1;
     uint public amount1;
-    IERC20 public takerAsset;
+    IERC20 public token2;
     address public owner2;
     uint public amount2;
 
     constructor(
-        address makerAsset,
+        address _token1,
         address _owner1,
         uint _amount1,
-        address takerAsset,
+        address _token2,
         address _owner2,
         uint _amount2
-    ) {
-        makerAsset = IERC20(makerAsset);
+    )public {
+        token1 = IERC20(_token1);
         owner1 = _owner1;
         amount1 = _amount1;
-        takerAsset = IERC20(takerAsset);
+        token2 = IERC20(_token2);
         owner2 = _owner2;
         amount2 = _amount2;
     }
         
         struct order{
             uint salt;
-            address makerAsset; //eth
-            address takerAsset; //eth into BUSD when target buy is hit in javascript loop
-            bytes makerAssetData; //transterfrom, signer,____,  amount
-            bytes takerAssetData;// transferto, sender, signer, amount
-            bytes getMakerAmount;// 
-            bytes getTakerAmount;
+           address token1; //eth
+           address token2; //eth into BUSD when target
+             //transterfrom, signer,____,  amount
+            // transferto, sender, signer, amount
+            uint getMakerAmount;// 
+            uint getTakerAmount;
             bytes predicate;
             bytes permit;
             bytes interaction;
-            
-            order[] orders;
-            
-        }
-        //this struct will be used to track the nessicary info to buy and swap assets
+        } //this struct will be used to track the nessicary info to buy and swap assets
+        
+      
         function fillorder(
-            uint salt,
-            address makerAsset,
-            address takerAsset,
-            bytes memory makerAssetData,
-            bytes memory takerAssetData,
-            bytes memory getMakerAmount,
-            bytes memory getTakerAmount,
-            bytes memory predicate,
-            bytes memory permit,
-            bytes memory interaction
-            )public payable returns(bool){
+            uint _salt,
+            address _token1,
+            address _token2,
+            uint _getMakerAmount,
+            uint _getTakerAmount,
+            bytes memory _predicate,
+            bytes memory _permit,
+            bytes memory _interaction
+            )public payable returns(bool, uint){
             //fill order struct
-            order memory neworder = orders[];
-            orders.push = neworder;
-            
+            success= true;
+            error = false;
+            _token1 = token1;
+            _token2 = token2;
+            getLatestPriceForToken1.call(token1);
+            order memory neworder = order(
+                _salt,
+                _token1,
+                _token2,
+                _getMakerAmount, //find out about staticcal  
+                _getTakerAmount, // check with staticcall
+                _predicate, // GET THE .CALL predicate
+                _permit,
+                _interaction
+                );
+        
+         return (token1price);
+        return (token2price);
+         emit makerAssetData(msg.sender, owner2, _getMakerAmount);
+        emit takerAssetData( msg.sender, owner2, msg.sender, _getTakerAmount);
+        return (true);
         }
+        
+            function checkPredicate(Order memory order) public view returns(bool) {
+        bytes memory result = address(this).uncheckedFunctionStaticCall(order.predicate, "LOP: predicate call failed");
+        require(result.length == 32, "LOP: invalid predicate return");
+        
+        return abi.decode(result, (bool));
+            }
+        //
+    
+  /*  function setAmountIndex(uint _AMOUNT_INDEX) public returns (uint) {
+        
+    }*/
+        
+        
+        
+        
+        
+  /*      function _callGetMakerAmount(order memory _order, uint takerAmount) internal view returns(uint makerAmount){
+    if(order.getMakerAmount.length == 0 && takerAmount == order.TakerAssetData.decodeUint(_AMOUNT_INDEX)) {
+        return order.makerAssetData.decodeUint(_AMOUNT_INDEX);
+        
+        
+    }
+    bytes memory result = address(this).uncheckedFunctionStaticCall(abi.encodePacked(order.getMakerAmount),"LOP: getMakerAmount call failed");
+    require(result.length == 32, "LOP: invalid getMakerAmount ret");
+    return abi.decide(resul, (uint));
+    
+}
+        
+        
+        
+      */  
         
         //this will let us know what price the progam will let us buy the token using dow theory's safe trading strategy
-        function getMakerAmountset()public returns(uint){
-            //swaap the coin for taker amount                           
-        }
+       
         
-            function limitOrderSwap() public {
+            function Buy(
+               uint index
+                ) public {
         require(msg.sender == owner1 || msg.sender == owner2, "Not authorized");
         require(
             token1.allowance(owner1, address(this)) >= amount1,
@@ -77,6 +134,7 @@ import "./SafeMath.sol";
             token2.allowance(owner2, address(this)) >= amount2,
             "Token 2 allowance too low"
         );
+        
 
         _safeTransferFrom(token1, owner1, owner2, amount1);
         _safeTransferFrom(token2, owner2, owner1, amount2);
@@ -92,9 +150,9 @@ import "./SafeMath.sol";
         require(sent, "Token transfer failed");
     }
         
-         function withdraw(amount)public payable returns (bool){
+//function withdraw(amount)public payable returns (bool){
             
-        }
+  //      }
         
         
         
