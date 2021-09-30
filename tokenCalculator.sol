@@ -1,13 +1,13 @@
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 /*
 dow theory calculator
 required variables:
 -mean price     use the data of the last 30 days open candels a+a+a+a+a+...etc a*30 =b, b/30 = average price
 -the target buy price   target buy price will be  ex.
-min - safe price adjuster
+min1 + min2 + min3 = x/3= target
 
 -the target sell price
-max - safe price adjuster
+max1 + max2 + max3 = y/3 = target
 
 
 -min and max extravagant tester to make sure the min and max are not un-reapeatable
@@ -24,18 +24,16 @@ withdraw
 
 /*
 list of things to do 
-- be able to ask for price of an token(have the tracker be versitile)
-- be able to identify out of place swings(10+ percent)
-- fill functions to order protocol
-- get taker and maker amount prices
-- what to do with swap and buy different assets? "maybe use moralis guides"
 
+- be able to identify out of place swings(10+ percent)
+- paste in and plug in securuty measures for order
+- debug
 */
 import "./safemath.sol";
 
     contract formulas{
         
-      using Safemath for uint256;
+      using SafeMath for uint256;
       
        bool success = true;
        bool failed = false;
@@ -106,11 +104,27 @@ import "./safemath.sol";
               return (success);
             
             }
-        /*
-         function safeAverage()public view returns(bool){
-            
-        }
         
+         function safeAverage(uint _Index)public view returns(bool){
+             priceHistory memory coinToReturn = stableCoins[_Index];
+             coinToReturn.lowestPricethismonth - coinToReturn.lowestPrice2MonthsAgo =c;
+             
+            if (
+    coinToReturn.lowestPrice2MonthsAgo  > (coinToReturn.lowestPricethismonth*0.20)-coinToReturn.lowestPricethismonth 
+    ){
+                  
+            }
+            if(coinToReturn.lowestPrice2MonthsAgo  > (coinToReturn.lowestPricethismonth*0.20)-coinToReturn.lowestPricethismonth){
+                
+            }
+            
+            /*if min1 is 17% lower than min2 min 1 = extravogant
+            if min 2 is 17% lower than min1 = min 2 is extravogant
+            if min 3 is lower than extravogant min 1 - 17% is target allowbuy
+            //vice versa with max
+            else  return string no extravogants, // use mod
+        */}
+       /* 
          function bart(){
             
         }
