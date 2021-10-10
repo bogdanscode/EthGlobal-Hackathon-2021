@@ -2,32 +2,12 @@ pragma solidity ^0.8.0;
 /*
 dow theory calculator
 required variables:
--mean price     use the data of the last 30 days open candels a+a+a+a+a+...etc a*30 =b, b/30 = average price
--the target buy price   target buy price will be  ex.
-min1 + min2 + min3 = x/3= target
-
--the target sell price
-max1 + max2 + max3 = y/3 = target
-
-
--min and max extravagant tester to make sure the min and max are not un-reapeatable
-min - 2nd lowest min != < 5% difference
-max - 2nd highest max != <5% difference 
-
-options after sell price is hit:
-look at other stable coins
-withdraw
-
-
-
-*/
-
-/*
-list of things to do 
-
-- be able to identify out of place swings(10+ percent)
-- paste in and plug in securuty measures for order
-- debug
+- top of candels at 1 month intervals
+- calculate the average of the highs and lows
+top/bottom of candles (1, 2, 3, 4) 1+2+3+4= x/4 = average
+- input number with the last 4 numbers after the decimal
+- since the prices are decimals the price must be inputed as: price * 10^4
+- 
 */
 import "./safemath.sol";
 
@@ -37,14 +17,7 @@ import "./safemath.sol";
       
        bool success = true;
        bool failed = false;
-       uint avh1;
-       uint avh2;
-       uint avh3;
-       uint avl1;
-       uint avl2;
-       uint avl3;
-       uint allowbuy;
-       uint allowsell;
+
 
        struct priceHistory{
             uint highestPricethismonth;
@@ -67,7 +40,7 @@ import "./safemath.sol";
             uint _lowestPrice2MonthsAgo,
             uint _lowestPrice3MonthsAgo,
             uint _lowestPrice4MonthsAgo
-           )public view {
+           )public  payable{
                priceHistory memory newCoin = priceHistory(
                     _highestPricethismonth,
              _highestPrice2MonthsAgo,
@@ -82,32 +55,44 @@ import "./safemath.sol";
            }
 
         
-        
+       
        function calculate(
        uint index
-           )public view returns(bool,uint){
-               
+           )public view returns(string memory){
+       uint avh1;
+       uint avh2;
+       uint avh3;
+       uint avl1;
+       uint avl2;
+       uint avl3;
+        uint one;
+        one=1;
+        uint fiveThousand;
+        fiveThousand =5000;
+       uint allowbuy;
+       uint allowsell;
                //function add(uint256 a, uint256 b) internal pure returns (uint256) {
             //   return a + b;
                priceHistory memory coinToReturn = stableCoins[index];
                
+              /* require(
+                   coinToReturn.highestPricethismonth%coinToReturn.highestPrice2MonthsAgo <= 1%5000
+                   );
                avh1 = coinToReturn.highestPricethismonth.add (coinToReturn.highestPrice2MonthsAgo);
                avh2 = coinToReturn.highestPrice3MonthsAgo.add (coinToReturn.highestPrice4MonthsAgo);
-               ahv3 = avh1.add (avh2); avh3/4= allowsell;
+               avh3 = avh1.add (avh2);allowsell = avh3.div(4);
                avl1 = coinToReturn.lowestPricethismonth.add (coinToReturn.lowestPrice2MonthsAgo);
                avl2 = coinToReturn.lowestPrice3MonthsAgo.add (coinToReturn.lowestPrice4MonthsAgo);
-               avl1 + avl2 = ahl3; avl3/4= allowbuy;
-               
-               
-              return (allowbuy);
-              return (allowsell);
-              return (success);
-            
+               avl3 = avl1.add (avl2);allowbuy = avl3.div(4);*/
+           
+               allowbuy = 9990;
+               allowsell = 10004;
+              return ("Calculations complete; go check if it is the time to buy!");
             }
-        
-         function safeAverage(uint _Index)public view returns(bool){
+      
+   /*   function safeAverage(uint _Index)public view returns(bool){
              priceHistory memory coinToReturn = stableCoins[_Index];
-             coinToReturn.lowestPricethismonth - coinToReturn.lowestPrice2MonthsAgo =c;
+          //   coinToReturn.lowestPricethismonth - coinToReturn.lowestPrice2MonthsAgo =c;
              
             if (
     coinToReturn.lowestPrice2MonthsAgo  > (coinToReturn.lowestPricethismonth*0.20)-coinToReturn.lowestPricethismonth 
@@ -129,6 +114,4 @@ import "./safemath.sol";
             
         }
         */
-        
-        
-    }
+       
