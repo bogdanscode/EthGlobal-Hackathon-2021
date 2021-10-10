@@ -1,2 +1,2 @@
-# EthGlobal-Hackathon-2021
+# EthGlobal-Hackathon-2021(INCOMPLETE)
 This is an automated market making strategy bot. Using Charle's Dow theory of how to trade "safely" this set of smart contracts will allow you to buy a stable coin the lowest price that comes up the most often(based on past price data of the token) and then sell at a good price. This strategy was only used when traders knew the token they were trading very well, because they know the stable price based on the swing of the market. But with this set of smart contracts, they take the data from the latest swing (medium size(3 months)) and they will become familiar with it on the spot.
