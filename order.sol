@@ -1,29 +1,31 @@
 pragma solidity ^0.8.0;
-
-import "./tracker1.sol";
-//import "./cointracker2.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+//import "./mint.sol";
+import "./formulas.sol";
 import "./safemath.sol";
 import "./interface.sol";
 //import "./helpers/PredicateHelper.sol";
-    contract orderss// is
-   // PredicateHelper
+    contract orderss
     {
          using SafeMath for uint256;
         
   //  event Transfer(address indexed from, address indexed to, uint value);
 //    event Approval(address indexed owner, address indexed spender, uint value);
-        event makerAssetData(address sender, address receiver,uint amountMaker);
-        event takerAssetData(address sender, address receiver,address signer, uint amount);
+        event makerAssetData(address sender, address tokenBuy,uint amount);
+        event takerAssetData(address tokenSold, address tokenBuy, uint amount);
+        bool success;
+        bool error;
+            AggregatorV3Interface internal priceFeed;
+      
         
-        
-         IERC20 public token1;
+    IERC20 public token1;
     address public owner1;
     uint public amount1;
     IERC20 public token2;
     address public owner2;
     uint public amount2;
 
-    constructor(
+    constructor (
         address _token1,
         address _owner1,
         uint _amount1,
@@ -37,6 +39,7 @@ import "./interface.sol";
         token2 = IERC20(_token2);
         owner2 = _owner2;
         amount2 = _amount2;
+        priceFeed = AggregatorV3Interface(_token2);
     }
         
         struct order{
@@ -53,7 +56,7 @@ import "./interface.sol";
         } //this struct will be used to track the nessicary info to buy and swap assets
         
       
-        function fillorder(
+        function fillOrder(
             uint _salt,
             address _token1,
             address _token2,
@@ -62,13 +65,12 @@ import "./interface.sol";
             bytes memory _predicate,
             bytes memory _permit,
             bytes memory _interaction
-            )public payable returns(bool, uint){
+            )public payable returns(bool){
             //fill order struct
             success= true;
             error = false;
-            _token1 = token1;
-            _token2 = token2;
-            getLatestPriceForToken1.call(token1);
+           
+            //getLatestPriceForToken1.call(token1);
             order memory neworder = order(
                 _salt,
                 _token1,
@@ -80,79 +82,88 @@ import "./interface.sol";
                 _interaction
                 );
         
-         return (token1price);
-        return (token2price);
+         //msg.sender.call{value: getLatestPriceForToken2}("");
+        //return (token2price);
          emit makerAssetData(msg.sender, owner2, _getMakerAmount);
-        emit takerAssetData( msg.sender, owner2, msg.sender, _getTakerAmount);
+      
         return (true);
         }
-        
-            function checkPredicate(Order memory order) public view returns(bool) {
-        bytes memory result = address(this).uncheckedFunctionStaticCall(order.predicate, "LOP: predicate call failed");
-        require(result.length == 32, "LOP: invalid predicate return");
-        
-        return abi.decode(result, (bool));
-            }
-        //
-    
-  /*  function setAmountIndex(uint _AMOUNT_INDEX) public returns (uint) {
-        
-    }*/
-        
-        
-        
-        
-        
-  /*      function _callGetMakerAmount(order memory _order, uint takerAmount) internal view returns(uint makerAmount){
-    if(order.getMakerAmount.length == 0 && takerAmount == order.TakerAssetData.decodeUint(_AMOUNT_INDEX)) {
-        return order.makerAssetData.decodeUint(_AMOUNT_INDEX);
-        
-        
-    }
-    bytes memory result = address(this).uncheckedFunctionStaticCall(abi.encodePacked(order.getMakerAmount),"LOP: getMakerAmount call failed");
-    require(result.length == 32, "LOP: invalid getMakerAmount ret");
-    return abi.decide(resul, (uint));
-    
-}
-        
-        
-        
-      */  
-        
-        //this will let us know what price the progam will let us buy the token using dow theory's safe trading strategy
-       
-        
-            function Buy(
-               uint index
-                ) public {
-        require(msg.sender == owner1 || msg.sender == owner2, "Not authorized");
-        require(
-            token1.allowance(owner1, address(this)) >= amount1,
-            "Token 1 allowance too low"
-        );
-        require(
-            token2.allowance(owner2, address(this)) >= amount2,
-            "Token 2 allowance too low"
-        );
-        
 
-        _safeTransferFrom(token1, owner1, owner2, amount1);
-        _safeTransferFrom(token2, owner2, owner1, amount2);
-    }
 
-    function _safeTransferFrom(
+      function AskToBuy(
+        uint index,
         IERC20 token,
         address sender,
         address recipient,
         uint amount
-    ) private {
+                ) public returns  (bool) {
+     uint token2Price;
+    token2Price = 1;
+     //mainnet BUSD/USD 0xcBb98864Ef56E9042e7d2efef76141f15731B82f
+    /**
+     * Network: MainNet
+     * Aggregator: BUSD/USD
+     * Address: 0xcBb98864Ef56E9042e7d2efef76141f15731B82f
+     */
+    /*
+     * Returns the latest price
+     */
+        (
+            uint80 roundID, 
+            int token2price,
+            uint startedAt,
+            uint timeStamp,
+            uint80 answeredInRound
+        ) = priceFeed.latestRoundData();
+ 
+        require(token1 != token2, "You cannot sell the token you are buying");
+      //require(token2price<=allowbuy)
+
         bool sent = token.transferFrom(sender, recipient, amount);
         require(sent, "Token transfer failed");
+
+        return(true);
+        
+        
     }
         
-//function withdraw(amount)public payable returns (bool){
-            
-  //      }
+function AskToSell(
+  uint index,
+               IERC20 token,
+        address sender,
+        address recipient,
+        uint amount
+)public returns (bool){
+    uint token2Price;
+    token2Price = 1;
+    int allowsell;
+    uint allowbuy;
+    allowsell = 9990;
+               //mainnet BUSD/USD 0xcBb98864Ef56E9042e7d2efef76141f15731B82f
+    /**
+     * Network: MainNet
+     * Aggregator: BUSD/USD
+     * Address: 0xcBb98864Ef56E9042e7d2efef76141f15731B82f
+     */
+    /*
+     * Returns the latest price
+     */
+        (
+            uint80 roundID, 
+            int token2price,
+            uint startedAt,
+            uint timeStamp,
+            uint80 answeredInRound
+        ) = priceFeed.latestRoundData();
+        token2price * 10**4;
+        require(token1 != token2, "You cannot sell the token you are buying");
+        if(token2price >= allowsell){
+        
+        bool sent = token.transferFrom(sender, recipient, amount);
+        require(sent, "Token transfer failed");
+        return(true);  
+        }
+      }
         
         
         
